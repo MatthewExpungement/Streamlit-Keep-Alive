@@ -17,24 +17,20 @@ def click_wakeup_button(url):
         time.sleep(5)
         #First search to see if the app is already running
         print("Checking if app is already running...")
-        try:
-            # First try to find in main document
+
+        # First try to find in main document
+        app_container = driver.find_element(By.CSS_SELECTOR, "div.stAppViewContainer")
+
+        app_container = None
+        
+        # If not found, check inside iframes
+        iframes = driver.find_elements(By.TAG_NAME, "iframe")
+        for iframe in iframes:
+            driver.switch_to.frame(iframe)
             app_container = driver.find_element(By.CSS_SELECTOR, "div.stAppViewContainer")
-        except:
-            app_container = None
-            
-            # If not found, check inside iframes
-            iframes = driver.find_elements(By.TAG_NAME, "iframe")
-            for iframe in iframes:
-                try:
-                    driver.switch_to.frame(iframe)
-                    app_container = driver.find_element(By.CSS_SELECTOR, "div.stAppViewContainer")
-                    if app_container:
-                        break
-                except:
-                    pass
-                finally:
-                    driver.switch_to.default_content()
+            if app_container:
+                break
+
         if app_container:
             print("App appears to be already running (found stAppViewContainer)")
         else:
